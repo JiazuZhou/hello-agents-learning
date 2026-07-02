@@ -119,7 +119,9 @@ if __name__ == '__main__':
     try:
         llm_client = HelloAgentsLLM()
         agent = PlanAndSolveAgent(llm_client)
-        question = "一个水果店周一卖出了15个苹果。周二卖出的苹果数量是周一的两倍。周三卖出的数量比周二少了5个。请问这三天总共卖出了多少个苹果？"
+        #question = "一个水果店周一卖出了15个苹果。周二卖出的苹果数量是周一的两倍。周三卖出的数量比周二少了5个。请问这三天总共卖出了多少个苹果？"
+        #question = "There are two numbers, the sum of them is 7 and the number A mines the number B is 1. What are the two numbers?"
+        question = "I need to design a simple html file to run the snake game. Pls help me get the final html file. If you cannot directly output an html file, let me know how to convert your output into the html file that I can directly open to play the game. In the game, we should have the start/pause/end button, and the slide bar to adjust the moving speed of the snake, and make the snake more mimic to like a real snake."
         agent.run(question)
     except ValueError as e:
         print(e)
