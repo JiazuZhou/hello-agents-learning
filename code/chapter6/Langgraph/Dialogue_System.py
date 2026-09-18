@@ -17,7 +17,9 @@ from dotenv import load_dotenv
 from tavily import TavilyClient
 
 # 加载环境变量
-load_dotenv()
+#load_dotenv()
+from pathlib import Path
+load_dotenv(Path(__file__).with_name(".env"))
 
 # 定义状态结构
 class SearchState(TypedDict):
@@ -29,10 +31,16 @@ class SearchState(TypedDict):
     step: str             # 当前步骤
 
 # 初始化模型和Tavily客户端
+# llm = ChatOpenAI(
+#     model=os.getenv("LLM_MODEL_ID", "gpt-4o-mini"),
+#     api_key=os.getenv("LLM_API_KEY"),
+#     base_url=os.getenv("LLM_BASE_URL", "https://api.openai.com/v1"),
+#     temperature=0.7
+# )
 llm = ChatOpenAI(
-    model=os.getenv("LLM_MODEL_ID", "gpt-4o-mini"),
+    model=os.getenv("LLM_MODEL_ID"),
     api_key=os.getenv("LLM_API_KEY"),
-    base_url=os.getenv("LLM_BASE_URL", "https://api.openai.com/v1"),
+    base_url=os.getenv("LLM_BASE_URL"),
     temperature=0.7
 )
 
@@ -59,7 +67,7 @@ def understand_query_node(state: SearchState) -> SearchState:
 理解：[用户需求总结]
 搜索词：[最佳搜索关键词]"""
 
-    response = llm.invoke([SystemMessage(content=understand_prompt)])
+    response = llm.invoke([HumanMessage(content=understand_prompt)])
     
     # 提取搜索关键词
     response_text = response.content
@@ -141,7 +149,8 @@ def generate_answer_node(state: SearchState) -> SearchState:
 
 请提供一个有用的回答，并说明这是基于已有知识的回答。"""
         
-        response = llm.invoke([SystemMessage(content=fallback_prompt)])
+        #response = llm.invoke([SystemMessage(content=fallback_prompt)])
+        response = llm.invoke([HumanMessage(content=fallback_prompt)])
         
         return {
             "final_answer": response.content,
@@ -164,7 +173,7 @@ def generate_answer_node(state: SearchState) -> SearchState:
 4. 回答要结构清晰、易于理解
 5. 如果搜索结果不够完整，请说明并提供补充建议"""
 
-    response = llm.invoke([SystemMessage(content=answer_prompt)])
+    response = llm.invoke([HumanMessage(content=answer_prompt)])
     
     return {
         "final_answer": response.content,
@@ -211,8 +220,14 @@ async def main():
     session_count = 0
     
     while True:
-        user_input = input("🤔 您想了解什么: ").strip()
-        
+        # 每次都提示退出方式，避免开场说明被刷屏后用户不知如何退出
+        try:
+            user_input = input("🤔 您想了解什么 (输入 quit / exit / 退出 结束): ").strip()
+        except (KeyboardInterrupt, EOFError):
+            # 支持 Ctrl+C / Ctrl+D 优雅退出，而不是抛出异常
+            print("\n感谢使用！再见！👋")
+            break
+
         if user_input.lower() in ['quit', 'q', '退出', 'exit']:
             print("感谢使用！再见！👋")
             break
