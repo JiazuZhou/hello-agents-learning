@@ -82,6 +82,9 @@ target/
 profile_default/
 ipython_config.py
 
+.env.example
+.env
+
 # pyenv
 #   For a library or package, you might want to ignore these files since the code is
 #   intended to run in multiple environments; otherwise, check them in:
@@ -121,13 +124,23 @@ celerybeat.pid
 
 # Environments
 .env
+.env.*
+.env.example
+.env copy
+.env example
 .venv
 .venv_*/
 env/
 venv/
+venv_*/
 ENV/
 env.bak/
 venv.bak/
+
+# HelloAgents runtime data (chapter 8 memory system)
+memory_data/
+knowledge_base/
+learning_report_*.json
 
 # Spyder project settings
 .spyderproject
